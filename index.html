@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <style type="text/css">
+    .dot {
+      position: absolute;
+    }
+    .dot2 {
+      position: absolute;
+      font-size: 3rem;
+      color: red;
+    }
+    .serif {
+      font-family: 'Noto Serif KR', serif;
+    }
+    .black-han-sans {
+      font-family: 'Black Han Sans', sans-serif;
+    }
+    .sunflower {
+      font-family: 'Sunflower', sans-serif;
+    }
+    #font-size-slider {
+      width: 200px;
+    }
+    #color-picker {
+      margin-top: 10px;
+    }
+    #slider-container {
+      position: relative;
+      width: 200px;
+      margin-bottom: 20px;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sunflower:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="slider-container">
+    <input type="range" id="font-size-slider" min="10" max="50" step="0.5" value="15">
+    <input type="color" id="color-picker" value="#000000">
+    <button id="eraser-button">Eraser</button>
+  </div>
+  <script src="text.js"></script>
+  <script type="text/javascript">
+    let b = a.split(" ");
+    let c = 0;
+    let d = 0;
+    let isEraserActive = false;
+
+    const fontFamilies = [
+      'Noto Sans KR, sans-serif',
+      'Noto Serif KR, serif',
+      'Black Han Sans, sans-serif',
+      'Sunflower, sans-serif'
+    ];
+
+    let currentFontIndex = 0;
+
+    const fontSizeSlider = document.getElementById('font-size-slider');
+    const colorPicker = document.getElementById('color-picker');
+    const sliderContainer = document.getElementById('slider-container');
+    const eraserButton = document.getElementById('eraser-button');
+    const sliderWidth = 200; // Slider width
+    const padding = 20; // Padding around the slider
+
+    sliderContainer.addEventListener('input', function() {
+      // Empty, the font size is updated on dot creation
+    });
+
+    window.onmousemove = function(e) {
+      if (isEraserActive) {
+        // Remove any dot at the mouse coordinates
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        const elements = document.elementsFromPoint(mouseX, mouseY);
+        elements.forEach(element => {
+          if (element.classList.contains('dot')) {
+            element.remove();
+          }
+        });
+        return;
+      }
+
+      if (e.target === sliderContainer) {
+        return; // Do not create dots when interacting with the slider
+      }
+
+      // Check if the mouse is within the range of the slider (+ padding)
+      const sliderLeft = sliderContainer.offsetLeft;
+      const sliderRight = sliderContainer.offsetLeft + sliderWidth;
+      const mouseX = e.clientX;
+
+      if (mouseX >= sliderLeft - padding && mouseX <= sliderRight + padding) {
+        return; // Mouse is over or near the slider, don't create a dot
+      }
+
+      if (c % 10 == 0) {
+        let dot = document.createElement('div');
+        dot.className = 'dot';
+        dot.style.fontSize = `${fontSizeSlider.value}px`;
+        dot.style.color = colorPicker.value;
+        dot.style.left = e.clientX + 'px';
+        dot.style.top = e.clientY + 'px';
+        dot.style.fontFamily = fontFamilies[currentFontIndex];
+        dot.innerText = b[d] || '';
+        document.body.appendChild(dot);
+        d = (d + 1) % b.length;
+      }
+      c++;
+    }
+
+    window.onclick = function(e) {
+      currentFontIndex = (currentFontIndex + 1) % fontFamilies.length;
+    }
+
+    eraserButton.addEventListener('click', () => {
+      isEraserActive = !isEraserActive;
+      eraserButton.innerText = isEraserActive ? 'Eraser On' : 'Eraser Off';
+    });
+  </script>
+</body>
+</html>
